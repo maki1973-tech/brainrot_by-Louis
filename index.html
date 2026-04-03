@@ -423,34 +423,33 @@ function saveToLeaderboard(name, pts) {
   });
 }
 
-const lbListeners = {};
 function renderLeaderboard(containerId, highlightScore) {
   const el = document.getElementById(containerId);
   if (!el) return;
   el.innerHTML = '<h3>🏆 RANGLISTE</h3><div class="lb-empty">Lädt...</div>';
-  const ref = db.ref('leaderboard').orderByChild('score').limitToLast(10);
-  if (lbListeners[containerId]) {
-    db.ref('leaderboard').off('value', lbListeners[containerId]);
-  }
-  lbListeners[containerId] = ref.on('value', snapshot => {
+  db.ref('leaderboard').on('value', snapshot => {
     const entries = [];
-    snapshot.forEach(child => entries.push(child.val()));
+    snapshot.forEach(child => {
+      const val = child.val();
+      if (val && val.name && val.score !== undefined) entries.push(val);
+    });
     entries.sort((a, b) => b.score - a.score);
-    if (entries.length === 0) {
+    const top10 = entries.slice(0, 10);
+    if (top10.length === 0) {
       el.innerHTML = '<h3>🏆 RANGLISTE</h3><div class="lb-empty">Noch keine Einträge – spiel los!</div>';
       return;
     }
     const rankSymbols = ['🥇', '🥈', '🥉'];
     const rankClass = ['gold', 'silver', 'bronze'];
     let html = '<h3>🏆 RANGLISTE</h3>';
-    entries.forEach((entry, i) => {
-      const isNew = highlightScore !== undefined && entry.score === highlightScore && i === entries.findIndex(e => e.score === highlightScore);
+    top10.forEach((entry, i) => {
+      const isNew = highlightScore !== undefined && entry.score === highlightScore && i === top10.findIndex(e => e.score === highlightScore);
       const rank = i < 3 ? `<span class="lb-rank ${rankClass[i]}">${rankSymbols[i]}</span>` : `<span class="lb-rank">${i + 1}.</span>`;
       html += `<div class="lb-row">
         ${rank}
         <span style="color:white; flex:1; margin-left:8px;">${entry.name}</span>
         <span class="lb-score">${entry.score.toLocaleString('de-DE')}</span>
-        <span class="lb-date">${entry.date}</span>
+        <span class="lb-date">${entry.date || ''}</span>
         ${isNew ? '<span class="lb-new">NEU!</span>' : ''}
       </div>`;
     });
