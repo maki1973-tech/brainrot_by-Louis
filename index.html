@@ -1523,6 +1523,7 @@ document.getElementById('retryBtn').addEventListener('click', handleStart, false
 // Ganzen Startscreen antippbar machen (aber nicht doppelt feuern)
 document.getElementById('startScreen').addEventListener('touchend', function(e) {
   if (e.target === document.getElementById('playBtn')) return;
+  if (e.target === document.getElementById('playerNameInput')) return;
   handleStart(e);
 }, { passive: false });
 document.getElementById('gameOverScreen').addEventListener('touchend', function(e) {
