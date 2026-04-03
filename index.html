@@ -303,6 +303,44 @@ canvas {
   text-shadow: 0 0 10px #ff6600;
 }
 
+#introScreen {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0a1a2e 100%);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.6s ease;
+  padding: 30px;
+  text-align: center;
+}
+.intro-line {
+  opacity: 0;
+  color: white;
+  font-weight: bold;
+  margin: 8px 0;
+  transform: translateY(25px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.intro-line.vis { opacity: 1; transform: translateY(0); }
+.intro-emoji { font-size: 3em; }
+.intro-title { font-size: 2em; text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
+.intro-sub { font-size: 1.1em; color: #ccc; }
+.intro-highlight { color: #00ffff; }
+.intro-og { font-size: 1.3em; color: #ffdd00; text-shadow: 0 0 15px #ffdd00; }
+.intro-skip {
+  margin-top: 35px;
+  color: rgba(255,255,255,0.35);
+  font-size: 0.9em;
+  opacity: 0;
+  animation: glow 2s ease-in-out infinite alternate;
+  transition: opacity 0.7s ease;
+}
+
 #swipeHint {
   position: fixed;
   bottom: 140px;
@@ -331,6 +369,17 @@ canvas {
 </style>
 </head>
 <body>
+
+<div id="introScreen">
+  <div class="intro-line intro-emoji" id="il0">🧠💥</div>
+  <div class="intro-line intro-title" id="il1">Lass dir kein<br><span style="color:#ff00ff">Brainrot stehlen!</span></div>
+  <div class="intro-line intro-sub" id="il2">Das ultimative Brainrot-Chaos-Spiel!</div>
+  <div class="intro-line intro-sub" id="il3">Sammel legendäre Internet-Figuren –<br><span class="intro-highlight">bevor die Zeit abläuft!</span></div>
+  <div class="intro-line intro-sub" id="il4">Rote Diebe wollen alles klauen.<br>Setz die <span style="color:#ff6600">🧨 Bombe</span> ein und töte sie!</div>
+  <div class="intro-line intro-sub" id="il5">Kämpf dich durch <span class="intro-highlight">zwei brutale Levels</span> –<br>mit Regen, Schnee und Blitzgewitter!</div>
+  <div class="intro-line intro-og" id="il6">👑 Hast du das Zeug zum OG-Sammler? 👑</div>
+  <div class="intro-skip" id="introSkip">Antippen zum Starten</div>
+</div>
 
 <div id="startScreen">
   <h1>LASS DIR KEIN<br>BRAINROT STEHLEN</h1>
@@ -390,6 +439,52 @@ canvas {
 <script>
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
+
+// === INTRO ===
+let introDone = false;
+
+function trySpeak() {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const text = "Lass dir kein Brainrot stehlen! Das ultimative Brainrot-Chaos-Spiel! " +
+    "Stürz dich in eine verrückte Welt voller legendärer Internet-Figuren und sammel sie alle – bevor die Zeit abläuft! " +
+    "Rote Diebe sind hinter dir her! Setz die Bombe ein und töte sie! " +
+    "Kämpf dich durch zwei brutale Levels mit Regen, Schnee und Blitzgewitter. " +
+    "Hast du das Zeug zum OG-Sammler?";
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  u.rate = 1.05;
+  u.pitch = 1.1;
+  window.speechSynthesis.speak(u);
+}
+
+function dismissIntro() {
+  if (introDone) return;
+  introDone = true;
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  const el = document.getElementById('introScreen');
+  el.style.opacity = '0';
+  setTimeout(() => { el.style.display = 'none'; }, 600);
+}
+
+function showIntro() {
+  const lines = document.querySelectorAll('.intro-line');
+  const skip = document.getElementById('introSkip');
+  let totalTime = 0;
+  lines.forEach((line, i) => {
+    const delay = 400 + i * 950;
+    totalTime = delay;
+    setTimeout(() => line.classList.add('vis'), delay);
+  });
+  setTimeout(() => { skip.style.opacity = '1'; }, totalTime + 400);
+  setTimeout(dismissIntro, totalTime + 3500);
+
+  const intro = document.getElementById('introScreen');
+  intro.addEventListener('touchend', (e) => { e.preventDefault(); trySpeak(); setTimeout(dismissIntro, 100); }, { once: true, passive: false });
+  intro.addEventListener('click', () => { trySpeak(); setTimeout(dismissIntro, 100); }, { once: true });
+}
+
+showIntro();
 
 // === FIREBASE & RANGLISTE ===
 const firebaseConfig = {
@@ -885,7 +980,7 @@ function startGame() {
   window._spawnInterval = setInterval(() => {
     if (!gameRunning) return;
     if (brainrots.length < 30) spawnBrainrot();
-    if (Math.random() < 0.3 && thieves.length < 6 + Math.floor((60 - timeLeft) / 15)) spawnThief();
+    if (Math.random() < 0.3 && thieves.length < 5 + Math.floor((60 - timeLeft) / 15)) spawnThief();
     if (Math.random() < 0.15 && stars.length < 2) spawnStar();
     if (Math.random() < 0.12 && bombs.length < 1) spawnBomb();
   }, 2000);
