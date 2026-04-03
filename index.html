@@ -493,7 +493,11 @@ const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platfor
 
 function getBestGermanVoice() {
   const voices = window.speechSynthesis.getVoices();
-  const preferred = ['Google Deutsch', 'Anna', 'Yannick', 'Petra', 'Helena', 'Hedda', 'Microsoft Hedda Online'];
+  // Erst Neural/Online-Stimmen (höchste Qualität)
+  const neural = voices.find(v => v.lang && v.lang.startsWith('de') && /neural|online/i.test(v.name));
+  if (neural) return neural;
+  // Dann bekannte gute Stimmen
+  const preferred = ['Microsoft Katja', 'Google Deutsch', 'Anna', 'Yannick', 'Petra', 'Helena', 'Hedda'];
   for (let name of preferred) {
     const v = voices.find(v => v.name.includes(name));
     if (v) return v;
@@ -539,16 +543,16 @@ function trySpeak() {
   document.getElementById('introTapHint').style.display = 'none';
   window.speechSynthesis.cancel();
   const text = "Lass dir kein Brainrot stehlen! " +
-    "Das ultimative Brainrot-Chaos-Spiel! " +
+    "Das ultimative Brainrot Chaos Spiel! " +
     "Stürz dich in eine verrückte Welt voller legendärer Internet-Figuren " +
     "und sammel sie alle – bevor die Zeit abläuft! " +
     "Rote Diebe sind hinter dir her – setz die Bombe ein und töte sie! " +
     "Kämpf dich durch zwei brutale Levels mit Regen, Schnee und Blitzgewitter. " +
-    "Hast du das Zeug zum OG-Sammler?";
+    "Hast du das Zeug zum O.G. Sammler?";
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'de-DE';
-  u.rate = 0.92;
-  u.pitch = 1.05;
+  u.rate = 0.88;
+  u.pitch = 1.0;
   const voice = getBestGermanVoice();
   if (voice) u.voice = voice;
   u.onend = () => setTimeout(dismissIntro, 1000);
