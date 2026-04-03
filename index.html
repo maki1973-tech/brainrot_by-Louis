@@ -423,11 +423,16 @@ function saveToLeaderboard(name, pts) {
   });
 }
 
+const lbListeners = {};
 function renderLeaderboard(containerId, highlightScore) {
   const el = document.getElementById(containerId);
   if (!el) return;
   el.innerHTML = '<h3>🏆 RANGLISTE</h3><div class="lb-empty">Lädt...</div>';
-  db.ref('leaderboard').orderByChild('score').limitToLast(10).once('value', snapshot => {
+  const ref = db.ref('leaderboard').orderByChild('score').limitToLast(10);
+  if (lbListeners[containerId]) {
+    db.ref('leaderboard').off('value', lbListeners[containerId]);
+  }
+  lbListeners[containerId] = ref.on('value', snapshot => {
     const entries = [];
     snapshot.forEach(child => entries.push(child.val()));
     entries.sort((a, b) => b.score - a.score);
