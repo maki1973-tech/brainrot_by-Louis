@@ -1439,6 +1439,12 @@ function endGame() {
 
 // === WETTER ===
 function updateWeather() {
+  if (currentLevel < 2) {
+    weather = 'none';
+    weatherParticles = [];
+    lightningFlash = 0;
+    return;
+  }
   weatherTimer--;
   if (weatherTimer <= 0) {
     const optionen = ['none', 'none', 'rain', 'rain', 'snow', 'lightning'];
@@ -1496,17 +1502,34 @@ function drawWeather() {
 
 // === BOMBE ===
 function spawnBomb() {
+  const angle = Math.random() * Math.PI * 2;
   bombs.push({
     x: 150 + Math.random() * (WORLD_W - 300),
     y: 150 + Math.random() * (WORLD_H - 300),
     size: 36,
-    bobOffset: Math.random() * Math.PI * 2
+    bobOffset: Math.random() * Math.PI * 2,
+    vx: Math.cos(angle) * 1.8,
+    vy: Math.sin(angle) * 1.8,
+    changeTimer: 60 + Math.random() * 100
   });
 }
 
 function updateBombs() {
   for (let i = bombs.length - 1; i >= 0; i--) {
     let b = bombs[i];
+    b.changeTimer--;
+    if (b.changeTimer <= 0) {
+      const angle = Math.random() * Math.PI * 2;
+      b.vx = Math.cos(angle) * 1.8;
+      b.vy = Math.sin(angle) * 1.8;
+      b.changeTimer = 60 + Math.random() * 100;
+    }
+    b.x += b.vx;
+    b.y += b.vy;
+    if (b.x < 80) b.vx = Math.abs(b.vx);
+    if (b.x > WORLD_W - 80) b.vx = -Math.abs(b.vx);
+    if (b.y < 80) b.vy = Math.abs(b.vy);
+    if (b.y > WORLD_H - 80) b.vy = -Math.abs(b.vy);
     if (dist(player, b) < player.size + b.size) {
       hasBomb = true;
       document.getElementById('bombIndicator').style.display = 'block';
