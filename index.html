@@ -414,7 +414,7 @@ canvas {
   <div class="intro-line intro-sub" id="il5">Kämpf dich durch <span class="intro-highlight">zwei brutale Levels</span> –<br>mit Regen, Schnee und Blitzgewitter!</div>
   <div class="intro-line intro-og" id="il6">👑 Hast du das Zeug zum OG-Sammler? 👑</div>
   <div class="intro-skip" id="introSkip">Antippen zum Starten</div>
-  <div id="introTapHint" style="display:none; margin-top:12px; background:rgba(0,255,255,0.12); border:1px solid rgba(0,255,255,0.3); border-radius:10px; padding:10px 20px; color:#00ffff; font-size:0.95em;">🔊 Antippen für Sprachausgabe</div>
+  <div id="introTapHint" style="margin-top:12px; background:rgba(0,255,255,0.12); border:1px solid rgba(0,255,255,0.3); border-radius:10px; padding:10px 20px; color:#00ffff; font-size:0.95em;">🔊 Antippen für Sound</div>
 </div>
 
 <div id="startScreen">
@@ -487,83 +487,111 @@ const ctx = canvas.getContext('2d');
 
 // === INTRO ===
 let introDone = false;
-let speechStarted = false;
 let autoDismissTimer = null;
+let introMusicStarted = false;
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-function getBestGermanVoice() {
-  const voices = window.speechSynthesis.getVoices();
-  // Erst Neural/Online-Stimmen (höchste Qualität)
-  const neural = voices.find(v => v.lang && v.lang.startsWith('de') && /neural|online/i.test(v.name));
-  if (neural) return neural;
-  // Dann bekannte gute Stimmen
-  const preferred = ['Microsoft Katja', 'Google Deutsch', 'Anna', 'Yannick', 'Petra', 'Helena', 'Hedda'];
-  for (let name of preferred) {
-    const v = voices.find(v => v.name.includes(name));
-    if (v) return v;
-  }
-  return voices.find(v => v.lang && v.lang.startsWith('de')) || null;
-}
-
-function playIntroSound() {
+function playIntroMusic() {
+  if (introMusicStarted) return;
+  introMusicStarted = true;
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const now = audioCtx.currentTime;
-    // Bass-Drone
-    [65.4, 130.8].forEach(freq => {
+
+    // Tiefer Bass-Drone
+    [55, 110].forEach(freq => {
       const osc = audioCtx.createOscillator();
       const g = audioCtx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, now);
       g.gain.setValueAtTime(0, now);
-      g.gain.linearRampToValueAtTime(0.12, now + 0.8);
-      g.gain.linearRampToValueAtTime(0.06, now + 5);
-      g.gain.exponentialRampToValueAtTime(0.001, now + 10);
+      g.gain.linearRampToValueAtTime(0.12, now + 1.2);
+      g.gain.linearRampToValueAtTime(0.07, now + 10);
+      g.gain.linearRampToValueAtTime(0, now + 14);
       osc.connect(g).connect(audioCtx.destination);
-      osc.start(now); osc.stop(now + 10);
+      osc.start(now); osc.stop(now + 14);
     });
-    // Epische aufsteigende Noten
-    [261, 329, 392, 523, 659, 784].forEach((freq, i) => {
+
+    // Epische Hauptmelodie
+    const mel = [
+      [392,0.3,0.5],[440,1.0,0.5],[523,1.7,0.7],[659,2.5,0.9],
+      [784,3.5,1.2],[659,4.9,0.5],[523,5.5,0.5],[440,6.1,0.5],
+      [392,6.7,0.6],[349,7.4,0.4],[392,7.9,0.5],[523,8.5,0.6],
+      [659,9.2,0.6],[784,9.9,0.7],[1047,10.7,2.5]
+    ];
+    mel.forEach(([freq, t, dur]) => {
       const osc = audioCtx.createOscillator();
       const g = audioCtx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, now + i * 1.2);
-      g.gain.setValueAtTime(0.13, now + i * 1.2);
-      g.gain.exponentialRampToValueAtTime(0.001, now + i * 1.2 + 2.0);
+      osc.frequency.setValueAtTime(freq, now + t);
+      g.gain.setValueAtTime(0, now + t);
+      g.gain.linearRampToValueAtTime(0.18, now + t + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.001, now + t + dur);
       osc.connect(g).connect(audioCtx.destination);
-      osc.start(now + i * 1.2); osc.stop(now + i * 1.2 + 2.0);
+      osc.start(now + t); osc.stop(now + t + dur + 0.1);
     });
-  } catch(e) {}
-}
 
-function trySpeak() {
-  if (!window.speechSynthesis || speechStarted) return;
-  speechStarted = true;
-  document.getElementById('introTapHint').style.display = 'none';
-  window.speechSynthesis.cancel();
-  const text = "Lass dir kein Brainrot stehlen! " +
-    "Das ultimative Brainrot Chaos Spiel! " +
-    "Stürz dich in eine verrückte Welt voller legendärer Internet-Figuren " +
-    "und sammel sie alle – bevor die Zeit abläuft! " +
-    "Rote Diebe sind hinter dir her – setz die Bombe ein und töte sie! " +
-    "Kämpf dich durch zwei brutale Levels mit Regen, Schnee und Blitzgewitter. " +
-    "Hast du das Zeug zum O.G. Sammler?";
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'de-DE';
-  u.rate = 0.88;
-  u.pitch = 1.0;
-  const voice = getBestGermanVoice();
-  if (voice) u.voice = voice;
-  u.onend = () => setTimeout(dismissIntro, 1000);
-  window.speechSynthesis.speak(u);
-  if (autoDismissTimer) { clearTimeout(autoDismissTimer); autoDismissTimer = null; }
+    // Akkord-Begleitung
+    const chords = [[0,[261,329,392]],[3.5,[349,440,523]],[7,[261,329,392]],[10,[392,494,587]]];
+    chords.forEach(([t, freqs]) => {
+      freqs.forEach(freq => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + t);
+        g.gain.setValueAtTime(0, now + t);
+        g.gain.linearRampToValueAtTime(0.06, now + t + 0.3);
+        g.gain.linearRampToValueAtTime(0.03, now + t + 2.5);
+        g.gain.exponentialRampToValueAtTime(0.001, now + t + 3.2);
+        osc.connect(g).connect(audioCtx.destination);
+        osc.start(now + t); osc.stop(now + t + 3.5);
+      });
+    });
+
+    // Schlagzeug-Hits
+    [0, 1.75, 3.5, 5.25, 7.0, 8.75, 10.5].forEach(t => {
+      const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.12, audioCtx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/d.length, 4);
+      const src = audioCtx.createBufferSource();
+      const g = audioCtx.createGain();
+      src.buffer = buf;
+      g.gain.setValueAtTime(t === 0 ? 0.25 : 0.14, now + t);
+      src.connect(g).connect(audioCtx.destination);
+      src.start(now + t);
+    });
+
+    // Soundeffekte pro Zeile
+    const lineSounds = [
+      [261,392,523],   // Zeile 0 – Boom-Chord
+      [523,659,784],   // Zeile 1 – Titel-Chord
+      [440,0,0],       // Zeile 2
+      [392,0,0],       // Zeile 3
+      [349,0,0],       // Zeile 4
+      [330,0,0],       // Zeile 5
+      [784,1047,0],    // Zeile 6 – Fanfare
+    ];
+    lineSounds.forEach((freqs, li) => {
+      const t = now + 0.5 + li * 1.5;
+      freqs.filter(f => f > 0).forEach((freq, fi) => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = li === 6 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(freq, t + fi * 0.07);
+        g.gain.setValueAtTime(li === 0 || li === 6 ? 0.2 : 0.1, t + fi * 0.07);
+        g.gain.exponentialRampToValueAtTime(0.001, t + fi * 0.07 + 0.5);
+        osc.connect(g).connect(audioCtx.destination);
+        osc.start(t + fi * 0.07); osc.stop(t + fi * 0.07 + 0.6);
+      });
+    });
+
+  } catch(e) {}
 }
 
 function dismissIntro() {
   if (introDone) return;
   introDone = true;
-  window.speechSynthesis && window.speechSynthesis.cancel();
   const el = document.getElementById('introScreen');
   el.style.opacity = '0';
   setTimeout(() => { el.style.display = 'none'; }, 600);
@@ -581,38 +609,22 @@ function showIntro() {
   setTimeout(() => { skip.style.opacity = '1'; }, totalTime + 500);
   autoDismissTimer = setTimeout(dismissIntro, totalTime + 4500);
 
-  // iOS-Hinweis sofort anzeigen
-  if (isIOS) {
-    document.getElementById('introTapHint').style.display = 'block';
-  }
+  // Desktop: Musik sofort starten
+  if (!isIOS) setTimeout(playIntroMusic, 100);
 
   const intro = document.getElementById('introScreen');
+  let tapped = false;
   function onTap(e) {
     if (e.cancelable) e.preventDefault();
-    playIntroSound();
-    if (!speechStarted) {
-      // Stimmen ggf. erst nach Interaktion verfügbar
-      if (window.speechSynthesis.getVoices().length === 0) {
-        window.speechSynthesis.onvoiceschanged = trySpeak;
-      }
-      trySpeak();
+    if (!tapped) {
+      tapped = true;
+      playIntroMusic(); // iOS: erst nach Antippen erlaubt
     } else {
       dismissIntro();
     }
   }
   intro.addEventListener('touchend', onTap, { passive: false });
   intro.addEventListener('click', onTap);
-
-  // Desktop: Stimmen laden und sofort sprechen
-  if (!isIOS) {
-    const startDesktopSpeech = () => trySpeak();
-    if (window.speechSynthesis.getVoices().length > 0) {
-      setTimeout(startDesktopSpeech, 400);
-    } else {
-      window.speechSynthesis.onvoiceschanged = () => setTimeout(startDesktopSpeech, 400);
-    }
-    setTimeout(playIntroSound, 200);
-  }
 }
 
 showIntro();
