@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Steal a Brainrot! (iPad)</title>
+<title>Lass dir kein Brainrot stehlen!</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -148,6 +148,161 @@ canvas {
 #finalScore { font-size: 3em; color: #ffdd00; margin: 15px 0; }
 #finalCollection { font-size: 1.2em; color: #ccc; margin-bottom: 20px; }
 
+#leaderboard, #leaderboardStart {
+  width: 100%;
+  max-width: 480px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 15px;
+  padding: 15px 20px;
+  margin: 15px 0;
+  text-align: left;
+}
+#leaderboard h3, #leaderboardStart h3 {
+  color: #ffdd00;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+.lb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.95em;
+}
+.lb-row:last-child { border-bottom: none; }
+.lb-rank { width: 30px; font-weight: bold; color: #aaa; }
+.lb-rank.gold { color: #ffdd00; font-size: 1.1em; }
+.lb-rank.silver { color: #cccccc; }
+.lb-rank.bronze { color: #cd7f32; }
+.lb-score { color: #00ffff; font-weight: bold; flex: 1; text-align: right; }
+.lb-date { color: #666; font-size: 0.8em; margin-left: 10px; }
+.lb-new { color: #ff1493; font-weight: bold; margin-left: 6px; font-size: 0.85em; animation: glow 1s ease-in-out infinite alternate; }
+.lb-empty { color: #555; text-align: center; padding: 10px; font-size: 0.9em; }
+
+#nameInputWrap {
+  margin: 15px 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+#nameInputWrap label {
+  color: #aaa;
+  font-size: 1em;
+}
+#playerNameInput {
+  font-size: 1.2em;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 2px solid rgba(0,255,255,0.4);
+  background: rgba(0,0,0,0.4);
+  color: white;
+  text-align: center;
+  width: 260px;
+  outline: none;
+}
+#playerNameInput:focus {
+  border-color: #00ffff;
+}
+
+#level2Btn {
+  position: fixed;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: none;
+  padding: 16px 30px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff6600, #ffdd00);
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  box-shadow: 0 5px 30px rgba(255,100,0,0.7);
+  animation: glow2 1.2s ease-in-out infinite alternate;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@keyframes glow2 {
+  from { box-shadow: 0 5px 30px rgba(255,100,0,0.7); transform: translateX(-50%) scale(1); }
+  to { box-shadow: 0 5px 50px rgba(255,200,0,1); transform: translateX(-50%) scale(1.05); }
+}
+
+#level2Intro {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0a2e 0%, #2a0a0a 50%, #1a1a00 100%);
+  z-index: 300;
+  color: white;
+  text-align: center;
+}
+#level2Intro h2 {
+  font-size: 2.8em;
+  margin-bottom: 8px;
+  text-shadow: 0 0 20px #ff6600, 0 0 40px #ff6600;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+#level2Intro p { color: #aaa; font-size: 1.1em; margin-bottom: 15px; }
+.og-showcase {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  padding: 0 20px;
+}
+.og-card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 15px;
+  padding: 12px 18px;
+  text-align: center;
+  border: 2px solid rgba(255,255,255,0.2);
+  min-width: 90px;
+}
+.og-card .og-emoji { font-size: 2.2em; }
+.og-card .og-name { font-size: 0.82em; color: #ffdd00; margin-top: 4px; font-weight: bold; }
+.og-card .og-pts { font-size: 0.72em; color: #00ffff; }
+
+#bombIndicator {
+  position: fixed;
+  bottom: 135px;
+  right: 20px;
+  z-index: 60;
+  font-size: 2.2em;
+  display: none;
+  filter: drop-shadow(0 0 10px #ff6600);
+  animation: bombPulse 0.7s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes bombPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.25); }
+}
+#levelIndicator {
+  position: fixed;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 51;
+  color: #ff6600;
+  font-size: 1em;
+  font-weight: bold;
+  pointer-events: none;
+  display: none;
+  text-shadow: 0 0 10px #ff6600;
+}
+
 #swipeHint {
   position: fixed;
   bottom: 140px;
@@ -178,10 +333,15 @@ canvas {
 <body>
 
 <div id="startScreen">
-  <h1>STEAL A<br>BRAINROT</h1>
+  <h1>LASS DIR KEIN<br>BRAINROT STEHLEN</h1>
   <p>Sammle so viele Brainrot-Figuren wie du kannst!</p>
+  <div id="nameInputWrap">
+    <label>Dein Name:</label>
+    <input id="playerNameInput" type="text" maxlength="16" placeholder="Name eingeben..." autocomplete="off" />
+  </div>
   <p style="color:#00ffff; font-size:0.9em; margin-bottom:10px;">▼ Irgendwo antippen zum Starten ▼</p>
   <button class="btn" id="playBtn">SPIELEN!</button>
+  <div id="leaderboardStart"></div>
   <div class="instructions">
     <h3>So geht's:</h3>
     <p>
@@ -199,6 +359,7 @@ canvas {
   <h1>ZEIT UM!</h1>
   <div id="finalScore">0</div>
   <div id="finalCollection"></div>
+  <div id="leaderboard"></div>
   <button class="btn" id="retryBtn">NOCHMAL!</button>
 </div>
 
@@ -214,9 +375,85 @@ canvas {
 
 <canvas id="game"></canvas>
 
+<button id="level2Btn" onclick="enterLevel2()">🌟 ZWEITES LEVEL BETRETEN 🌟</button>
+<div id="bombIndicator">🧨</div>
+<div id="levelIndicator">⚡ LEVEL 2 ⚡</div>
+
+<div id="level2Intro">
+  <h2>⚡ LEVEL 2 ⚡</h2>
+  <p>Alle OGs in diesem Level:</p>
+  <div class="og-showcase" id="ogShowcase"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
+
+// === FIREBASE & RANGLISTE ===
+const firebaseConfig = {
+  apiKey: "AIzaSyAAy6itFPWlPVkSoU1LH8hPzvtJsQj1a0Y",
+  authDomain: "brainrot-1f0ef.firebaseapp.com",
+  databaseURL: "https://brainrot-1f0ef-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "brainrot-1f0ef",
+  appId: "1:584543634580:web:2e61f9f8bebf60973c6081"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let playerName = localStorage.getItem('brainrotPlayerName') || '';
+const nameInput = document.getElementById('playerNameInput');
+nameInput.value = playerName;
+nameInput.addEventListener('input', () => {
+  playerName = nameInput.value.trim();
+  localStorage.setItem('brainrotPlayerName', playerName);
+});
+
+function saveToLeaderboard(name, pts) {
+  const cleanName = (name || 'Anonym').trim();
+  const key = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'anonym';
+  const date = new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  const ref = db.ref('leaderboard/' + key);
+  ref.once('value', snapshot => {
+    const existing = snapshot.val();
+    if (!existing || pts > existing.score) {
+      ref.set({ name: cleanName, score: pts, date });
+    }
+  });
+}
+
+function renderLeaderboard(containerId, highlightScore) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '<h3>🏆 RANGLISTE</h3><div class="lb-empty">Lädt...</div>';
+  db.ref('leaderboard').orderByChild('score').limitToLast(10).once('value', snapshot => {
+    const entries = [];
+    snapshot.forEach(child => entries.push(child.val()));
+    entries.sort((a, b) => b.score - a.score);
+    if (entries.length === 0) {
+      el.innerHTML = '<h3>🏆 RANGLISTE</h3><div class="lb-empty">Noch keine Einträge – spiel los!</div>';
+      return;
+    }
+    const rankSymbols = ['🥇', '🥈', '🥉'];
+    const rankClass = ['gold', 'silver', 'bronze'];
+    let html = '<h3>🏆 RANGLISTE</h3>';
+    entries.forEach((entry, i) => {
+      const isNew = highlightScore !== undefined && entry.score === highlightScore && i === entries.findIndex(e => e.score === highlightScore);
+      const rank = i < 3 ? `<span class="lb-rank ${rankClass[i]}">${rankSymbols[i]}</span>` : `<span class="lb-rank">${i + 1}.</span>`;
+      html += `<div class="lb-row">
+        ${rank}
+        <span style="color:white; flex:1; margin-left:8px;">${entry.name}</span>
+        <span class="lb-score">${entry.score.toLocaleString('de-DE')}</span>
+        <span class="lb-date">${entry.date}</span>
+        ${isNew ? '<span class="lb-new">NEU!</span>' : ''}
+      </div>`;
+    });
+    el.innerHTML = html;
+  });
+}
+
+renderLeaderboard('leaderboardStart');
 
 // === AUDIO ===
 let audioCtx = null;
@@ -433,8 +670,10 @@ const BRAINROT_TYPES = [
   { emoji: '🦝', name: 'Bobritto Bandito',        points: 75,  rarity: 'epic',      color: '#ff3366' },
   { emoji: '🗿', name: 'Trippi Troppi',           points: 100, rarity: 'legendary', color: '#ffdd00' },
   { emoji: '🐒', name: 'Chimpanzini Bananini',    points: 150, rarity: 'legendary', color: '#ff0066' },
-  { emoji: '🍓', name: 'Erdbeerelefant',           points: 1000000, rarity: 'og', color: '#ff1493', og: true, ogId: 'erdbeere' },
-  { emoji: '🚽', name: 'Symbidi Toilet',           points: 1000000, rarity: 'og', color: '#00ffff', og: true, ogId: 'symbidi' },
+  { emoji: '🍓', name: 'Erdbeerelefant',  points: 1000000, rarity: 'og', color: '#ff1493', og: true, ogId: 'erdbeere', level: 1 },
+  { emoji: '🚽', name: 'Symbidi Toilet',  points: 1000000, rarity: 'og', color: '#00ffff', og: true, ogId: 'symbidi',  level: 1 },
+  { emoji: '🎤', name: '67',              points: 500000,  rarity: 'og', color: '#ff6600', og: true, ogId: 'og67',     level: 2 },
+  { emoji: '🦉', name: 'Meowl',           points: 1000000, rarity: 'og', color: '#9966ff', og: true, ogId: 'meowl',    level: 2 },
 ];
 
 const RARITY_COLORS = {
@@ -458,7 +697,8 @@ const RARITY_GLOW = {
 let W, H;
 let player, brainrots, thieves, stars, particles;
 let score, timeLeft, gameRunning, combo, comboTimer, shield, shieldTimer;
-let collected, keys, animFrame, ogSpawned, og2Spawned;
+let collected, keys, animFrame, ogSpawned, og2Spawned, og3Spawned, og4Spawned;
+let currentLevel, hasBomb, bombs;
 let camX, camY;
 const WORLD_W = 3000, WORLD_H = 2000;
 
@@ -546,6 +786,14 @@ function startGame() {
   shieldTimer = 0;
   ogSpawned = false;
   og2Spawned = false;
+  og3Spawned = false;
+  og4Spawned = false;
+  currentLevel = 1;
+  hasBomb = false;
+  bombs = [];
+  document.getElementById('level2Btn').style.display = 'none';
+  document.getElementById('bombIndicator').style.display = 'none';
+  document.getElementById('levelIndicator').style.display = 'none';
   camX = 0; camY = 0;
 
   playSound('gamestart');
@@ -693,15 +941,31 @@ function updatePlayer() {
 function updateBrainrots() {
   for (let i = brainrots.length - 1; i >= 0; i--) {
     let b = brainrots[i];
+    if (b.type.og) {
+      const ogSpeed = (b.type.level === 2) ? 3.8 : 2.2;
+      b.changeTimer = (b.changeTimer || 0) - 1;
+      if (b.changeTimer <= 0) {
+        let angle = Math.random() * Math.PI * 2;
+        b.vx = Math.cos(angle) * ogSpeed;
+        b.vy = Math.sin(angle) * ogSpeed;
+        b.changeTimer = 80 + Math.random() * 100;
+      }
+      b.x += b.vx || 0;
+      b.y += b.vy || 0;
+      if (b.x < 80) { b.vx = Math.abs(b.vx); }
+      if (b.x > WORLD_W - 80) { b.vx = -Math.abs(b.vx); }
+      if (b.y < 80) { b.vy = Math.abs(b.vy); }
+      if (b.y > WORLD_H - 80) { b.vy = -Math.abs(b.vy); }
+    }
     if (dist(player, b) < player.size + b.size) {
       combo++;
       comboTimer = 90;
       let pts;
       if (b.type.og) {
-        pts = 1000000;
-        addParticles(b.x, b.y, '#ff1493', 60);
+        pts = b.type.points;
+        addParticles(b.x, b.y, b.type.color, 60);
         addParticles(b.x, b.y, '#ffdd00', 40);
-        floatingText(b.x, b.y, '🍓 +1.000.000 ERDBEERELEFANT! 🍓', '#ff1493');
+        floatingText(b.x, b.y, `${b.type.emoji} +${pts.toLocaleString('de-DE')} ${b.type.name}! ${b.type.emoji}`, b.type.color);
         playSound('collect_legendary');
       } else {
         let multiplier = Math.min(combo, 5);
@@ -740,7 +1004,15 @@ function updateThieves() {
     t.x = Math.max(0, Math.min(WORLD_W, t.x));
     t.y = Math.max(0, Math.min(WORLD_H, t.y));
     if (d < player.size + t.size) {
-      if (shield) {
+      if (hasBomb) {
+        hasBomb = false;
+        document.getElementById('bombIndicator').style.display = 'none';
+        addParticles(t.x, t.y, '#ff6600', 35);
+        addParticles(t.x, t.y, '#ffdd00', 25);
+        floatingText(t.x, t.y, '💥 BOOM! DIEB GETÖTET!', '#ff6600');
+        playSound('collect_legendary');
+        thieves.splice(i, 1);
+      } else if (shield) {
         shield = false; shieldTimer = 0;
         floatingText(player.x, player.y, 'SCHILD BLOCKIERT!', '#ffdd00');
         addParticles(player.x, player.y, '#ffdd00', 20);
@@ -749,7 +1021,17 @@ function updateThieves() {
       } else if (collected.length > 0) {
         let stolen = Math.min(3, collected.length);
         let lostPoints = 0;
-        for (let s = 0; s < stolen; s++) { let item = collected.pop(); lostPoints += item.points; }
+        for (let s = 0; s < stolen; s++) {
+          let item = collected.pop();
+          lostPoints += item.points;
+          if (item.og && Math.random() < 0.15) {
+            setTimeout(() => {
+              if (!gameRunning) return;
+              brainrots.push({ x: 150 + Math.random()*(WORLD_W-300), y: 150 + Math.random()*(WORLD_H-300), type: item, size: 38, bobOffset: Math.random()*Math.PI*2, spawnTime: Date.now() });
+              floatingText(WORLD_W/2, WORLD_H/2, `${item.emoji} ${item.name} RESPAWNT!`, item.color);
+            }, 4000 + Math.random() * 6000);
+          }
+        }
         score = Math.max(0, score - lostPoints);
         combo = 0;
         floatingText(player.x, player.y, `-${lostPoints} GEKLAUT!`, '#ff0000');
@@ -795,9 +1077,13 @@ function updateHUD() {
   } else {
     document.getElementById('combo').textContent = '';
   }
+  if (currentLevel === 1 && score >= 2002000) {
+    document.getElementById('level2Btn').style.display = 'block';
+  }
   let inv = document.getElementById('inventory');
   let show = collected.slice(-15);
-  inv.innerHTML = show.map(t => `<div class="inv-item" style="border-color:${RARITY_COLORS[t.rarity]}">${t.emoji}</div>`).join('');
+  let bombSlot = hasBomb ? `<div class="inv-item" style="border-color:#ff6600; background:rgba(255,100,0,0.2)">🧨</div>` : '';
+  inv.innerHTML = bombSlot + show.map(t => `<div class="inv-item" style="border-color:${RARITY_COLORS[t.rarity]}">${t.emoji}</div>`).join('');
 }
 
 function drawBackground() {
@@ -1054,10 +1340,12 @@ function gameLoop() {
   updateBrainrots();
   updateThieves();
   updateStars();
+  updateBombs();
   updateParticles();
   drawBackground();
   drawBrainrots();
   drawStars();
+  drawBombs();
   drawParticles();
   drawThieves();
   drawPlayer();
@@ -1075,13 +1363,141 @@ function endGame() {
   cancelAnimationFrame(animFrame);
   document.getElementById('hud').style.display = 'none';
   document.getElementById('inventory').style.display = 'none';
+  document.getElementById('level2Btn').style.display = 'none';
+  document.getElementById('bombIndicator').style.display = 'none';
+  document.getElementById('levelIndicator').style.display = 'none';
   document.getElementById('gameOverScreen').style.display = 'flex';
-  document.getElementById('finalScore').textContent = score + ' Punkte';
+  document.getElementById('finalScore').textContent = score.toLocaleString('de-DE') + ' Punkte';
   let counts = {};
   for (let c of collected) { counts[c.name] = (counts[c.name] || 0) + 1; }
   let summary = Object.entries(counts).map(([name, count]) => `${count}x ${name}`).join(', ');
   document.getElementById('finalCollection').textContent =
     collected.length > 0 ? `Gesammelt: ${collected.length} Figuren (${summary})` : 'Keine Figuren gesammelt!';
+  const finalName = playerName || 'Anonym';
+  saveToLeaderboard(finalName, score);
+  renderLeaderboard('leaderboard', score);
+  renderLeaderboard('leaderboardStart');
+}
+
+// === BOMBE ===
+function spawnBomb() {
+  bombs.push({
+    x: 150 + Math.random() * (WORLD_W - 300),
+    y: 150 + Math.random() * (WORLD_H - 300),
+    size: 36,
+    bobOffset: Math.random() * Math.PI * 2
+  });
+}
+
+function updateBombs() {
+  for (let i = bombs.length - 1; i >= 0; i--) {
+    let b = bombs[i];
+    if (dist(player, b) < player.size + b.size) {
+      hasBomb = true;
+      document.getElementById('bombIndicator').style.display = 'block';
+      floatingText(b.x, b.y, '🧨 BOMBE! Dieb töten!', '#ff6600');
+      addParticles(b.x, b.y, '#ff6600', 20);
+      bombs.splice(i, 1);
+      updateHUD();
+    }
+  }
+}
+
+function drawBombs() {
+  let time = Date.now() / 1000;
+  for (let b of bombs) {
+    let { x, y } = worldToScreen(b.x, b.y);
+    if (x < -50 || x > W + 50 || y < -50 || y > H + 50) continue;
+    let bob = Math.sin(time * 4 + b.bobOffset) * 6;
+    let pulse = 1 + Math.sin(time * 5) * 0.12;
+    ctx.save();
+    ctx.shadowColor = 'rgba(255,100,0,0.9)';
+    ctx.shadowBlur = 30;
+    ctx.font = `${b.size * 1.5 * pulse}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🧨', x, y + bob);
+    ctx.restore();
+    ctx.font = 'bold 11px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ff6600';
+    ctx.fillText('BOMBE', x, y + bob + b.size + 10);
+  }
+}
+
+// === LEVEL 2 ===
+function enterLevel2() {
+  gameRunning = false;
+  document.getElementById('level2Btn').style.display = 'none';
+  clearInterval(window._timerInterval);
+
+  const allOGs = BRAINROT_TYPES.filter(t => t.og);
+  document.getElementById('ogShowcase').innerHTML = allOGs.map(og => `
+    <div class="og-card">
+      <div class="og-emoji">${og.emoji}</div>
+      <div class="og-name">${og.name}</div>
+      <div class="og-pts">${og.points.toLocaleString('de-DE')} Pts</div>
+    </div>
+  `).join('');
+  document.getElementById('level2Intro').style.display = 'flex';
+
+  setTimeout(() => {
+    document.getElementById('level2Intro').style.display = 'none';
+    startLevel2();
+  }, 2000);
+}
+
+function startLevel2() {
+  currentLevel = 2;
+  timeLeft = 60;
+  gameRunning = true;
+  og3Spawned = false;
+  og4Spawned = false;
+  document.getElementById('timer').textContent = '60s';
+  document.getElementById('timer').style.color = '#ff6666';
+  document.getElementById('levelIndicator').style.display = 'block';
+
+  // Level-1-OGs falls nicht mehr vorhanden wieder spawnen
+  if (!brainrots.some(b => b.type.ogId === 'erdbeere')) {
+    const t = BRAINROT_TYPES.find(t => t.ogId === 'erdbeere');
+    brainrots.push({ x: 150+Math.random()*(WORLD_W-300), y: 150+Math.random()*(WORLD_H-300), type: t, size: 38, bobOffset: 0, spawnTime: Date.now() });
+  }
+  if (!brainrots.some(b => b.type.ogId === 'symbidi')) {
+    const t = BRAINROT_TYPES.find(t => t.ogId === 'symbidi');
+    brainrots.push({ x: 150+Math.random()*(WORLD_W-300), y: 150+Math.random()*(WORLD_H-300), type: t, size: 38, bobOffset: Math.PI, spawnTime: Date.now() });
+  }
+
+  // Level-2-OGs spawnen
+  setTimeout(() => {
+    if (!gameRunning || currentLevel < 2 || og3Spawned) return;
+    og3Spawned = true;
+    const t = BRAINROT_TYPES.find(t => t.ogId === 'og67');
+    brainrots.push({ x: 150+Math.random()*(WORLD_W-300), y: 150+Math.random()*(WORLD_H-300), type: t, size: 38, bobOffset: 0, spawnTime: Date.now() });
+    floatingText(WORLD_W/2, WORLD_H/2, '🎤 67 ERSCHEINT! 🎤', '#ff6600');
+  }, 5000);
+
+  setTimeout(() => {
+    if (!gameRunning || currentLevel < 2 || og4Spawned) return;
+    og4Spawned = true;
+    const t = BRAINROT_TYPES.find(t => t.ogId === 'meowl');
+    brainrots.push({ x: 150+Math.random()*(WORLD_W-300), y: 150+Math.random()*(WORLD_H-300), type: t, size: 38, bobOffset: Math.PI, spawnTime: Date.now() });
+    floatingText(WORLD_W/2, WORLD_H/2, '🦉 MEOWL ERSCHEINT! 🦉', '#9966ff');
+  }, 15000);
+
+  // Bombe spawnen
+  setTimeout(() => { if (gameRunning) spawnBomb(); }, 8000);
+
+  // Timer neu starten
+  window._timerInterval = setInterval(() => {
+    if (!gameRunning) return;
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft + 's';
+    if (timeLeft <= 10) { document.getElementById('timer').style.color = '#ff0000'; playSound('tick'); }
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+
+  if (animFrame) cancelAnimationFrame(animFrame);
+  gameLoop();
 }
 
 // === START BUTTONS ===
@@ -1093,6 +1509,8 @@ function handleStart(e) {
   _starting = true;
   if (e.cancelable) e.preventDefault();
   ensureAudio();
+  playerName = document.getElementById('playerNameInput').value.trim();
+  localStorage.setItem('brainrotPlayerName', playerName);
   startGame();
   setTimeout(function() { _starting = false; }, 1000);
 }
