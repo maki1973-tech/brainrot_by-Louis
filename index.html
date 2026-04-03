@@ -183,6 +183,41 @@ canvas {
 .lb-new { color: #ff1493; font-weight: bold; margin-left: 6px; font-size: 0.85em; animation: glow 1s ease-in-out infinite alternate; }
 .lb-empty { color: #555; text-align: center; padding: 10px; font-size: 0.9em; }
 
+.ratingBtn {
+  font-size: 2.5em;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 15px;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.2s;
+  touch-action: manipulation;
+}
+.ratingBtn:active { transform: scale(0.9); }
+.ratingBtn.selected { background: rgba(255,255,255,0.2); border-color: #00ffff; }
+
+#ratingBox {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 15px;
+  padding: 15px 20px;
+  margin: 10px 0;
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+}
+
+#ratingsDisplay {
+  position: fixed;
+  top: 12px;
+  right: 15px;
+  z-index: 52;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85em;
+  pointer-events: none;
+  display: none;
+}
+
 #nameInputWrap {
   margin: 15px 0 10px 0;
   display: flex;
@@ -379,6 +414,7 @@ canvas {
   <div class="intro-line intro-sub" id="il5">Kämpf dich durch <span class="intro-highlight">zwei brutale Levels</span> –<br>mit Regen, Schnee und Blitzgewitter!</div>
   <div class="intro-line intro-og" id="il6">👑 Hast du das Zeug zum OG-Sammler? 👑</div>
   <div class="intro-skip" id="introSkip">Antippen zum Starten</div>
+  <div id="introTapHint" style="display:none; margin-top:12px; background:rgba(0,255,255,0.12); border:1px solid rgba(0,255,255,0.3); border-radius:10px; padding:10px 20px; color:#00ffff; font-size:0.95em;">🔊 Antippen für Sprachausgabe</div>
 </div>
 
 <div id="startScreen">
@@ -409,6 +445,14 @@ canvas {
   <div id="finalScore">0</div>
   <div id="finalCollection"></div>
   <div id="leaderboard"></div>
+  <div id="ratingBox" style="display:none;">
+    <p style="color:#aaa; font-size:0.95em; margin-bottom:10px;">Wie findest du das Spiel?</p>
+    <div style="display:flex; gap:20px; justify-content:center;">
+      <button class="ratingBtn" id="thumbUp" onclick="submitRating('up')">👍</button>
+      <button class="ratingBtn" id="thumbDown" onclick="submitRating('down')">👎</button>
+    </div>
+    <div id="ratingResult" style="display:none; margin-top:10px; color:#00ffff; font-size:1em;"></div>
+  </div>
   <button class="btn" id="retryBtn">NOCHMAL!</button>
 </div>
 
@@ -421,6 +465,7 @@ canvas {
 <div id="inventory" style="display:none;"></div>
 
 <div id="swipeHint">👆 Wischen zum Bewegen</div>
+<div id="ratingsDisplay"></div>
 
 <canvas id="game"></canvas>
 
@@ -442,20 +487,73 @@ const ctx = canvas.getContext('2d');
 
 // === INTRO ===
 let introDone = false;
+let speechStarted = false;
+let autoDismissTimer = null;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+function getBestGermanVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = ['Google Deutsch', 'Anna', 'Yannick', 'Petra', 'Helena', 'Hedda', 'Microsoft Hedda Online'];
+  for (let name of preferred) {
+    const v = voices.find(v => v.name.includes(name));
+    if (v) return v;
+  }
+  return voices.find(v => v.lang && v.lang.startsWith('de')) || null;
+}
+
+function playIntroSound() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Bass-Drone
+    [65.4, 130.8].forEach(freq => {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(0.12, now + 0.8);
+      g.gain.linearRampToValueAtTime(0.06, now + 5);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 10);
+      osc.connect(g).connect(audioCtx.destination);
+      osc.start(now); osc.stop(now + 10);
+    });
+    // Epische aufsteigende Noten
+    [261, 329, 392, 523, 659, 784].forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + i * 1.2);
+      g.gain.setValueAtTime(0.13, now + i * 1.2);
+      g.gain.exponentialRampToValueAtTime(0.001, now + i * 1.2 + 2.0);
+      osc.connect(g).connect(audioCtx.destination);
+      osc.start(now + i * 1.2); osc.stop(now + i * 1.2 + 2.0);
+    });
+  } catch(e) {}
+}
 
 function trySpeak() {
-  if (!window.speechSynthesis) return;
+  if (!window.speechSynthesis || speechStarted) return;
+  speechStarted = true;
+  document.getElementById('introTapHint').style.display = 'none';
   window.speechSynthesis.cancel();
-  const text = "Lass dir kein Brainrot stehlen! Das ultimative Brainrot-Chaos-Spiel! " +
-    "Stürz dich in eine verrückte Welt voller legendärer Internet-Figuren und sammel sie alle – bevor die Zeit abläuft! " +
-    "Rote Diebe sind hinter dir her! Setz die Bombe ein und töte sie! " +
+  const text = "Lass dir kein Brainrot stehlen! " +
+    "Das ultimative Brainrot-Chaos-Spiel! " +
+    "Stürz dich in eine verrückte Welt voller legendärer Internet-Figuren " +
+    "und sammel sie alle – bevor die Zeit abläuft! " +
+    "Rote Diebe sind hinter dir her – setz die Bombe ein und töte sie! " +
     "Kämpf dich durch zwei brutale Levels mit Regen, Schnee und Blitzgewitter. " +
     "Hast du das Zeug zum OG-Sammler?";
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'de-DE';
-  u.rate = 1.05;
-  u.pitch = 1.1;
+  u.rate = 0.92;
+  u.pitch = 1.05;
+  const voice = getBestGermanVoice();
+  if (voice) u.voice = voice;
+  u.onend = () => setTimeout(dismissIntro, 1000);
   window.speechSynthesis.speak(u);
+  if (autoDismissTimer) { clearTimeout(autoDismissTimer); autoDismissTimer = null; }
 }
 
 function dismissIntro() {
@@ -472,16 +570,45 @@ function showIntro() {
   const skip = document.getElementById('introSkip');
   let totalTime = 0;
   lines.forEach((line, i) => {
-    const delay = 400 + i * 950;
+    const delay = 500 + i * 1500;
     totalTime = delay;
     setTimeout(() => line.classList.add('vis'), delay);
   });
-  setTimeout(() => { skip.style.opacity = '1'; }, totalTime + 400);
-  setTimeout(dismissIntro, totalTime + 3500);
+  setTimeout(() => { skip.style.opacity = '1'; }, totalTime + 500);
+  autoDismissTimer = setTimeout(dismissIntro, totalTime + 4500);
+
+  // iOS-Hinweis sofort anzeigen
+  if (isIOS) {
+    document.getElementById('introTapHint').style.display = 'block';
+  }
 
   const intro = document.getElementById('introScreen');
-  intro.addEventListener('touchend', (e) => { e.preventDefault(); trySpeak(); setTimeout(dismissIntro, 100); }, { once: true, passive: false });
-  intro.addEventListener('click', () => { trySpeak(); setTimeout(dismissIntro, 100); }, { once: true });
+  function onTap(e) {
+    if (e.cancelable) e.preventDefault();
+    playIntroSound();
+    if (!speechStarted) {
+      // Stimmen ggf. erst nach Interaktion verfügbar
+      if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.onvoiceschanged = trySpeak;
+      }
+      trySpeak();
+    } else {
+      dismissIntro();
+    }
+  }
+  intro.addEventListener('touchend', onTap, { passive: false });
+  intro.addEventListener('click', onTap);
+
+  // Desktop: Stimmen laden und sofort sprechen
+  if (!isIOS) {
+    const startDesktopSpeech = () => trySpeak();
+    if (window.speechSynthesis.getVoices().length > 0) {
+      setTimeout(startDesktopSpeech, 400);
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => setTimeout(startDesktopSpeech, 400);
+    }
+    setTimeout(playIntroSound, 200);
+  }
 }
 
 showIntro();
@@ -553,6 +680,60 @@ function renderLeaderboard(containerId, highlightScore) {
 }
 
 renderLeaderboard('leaderboardStart');
+
+// === BEWERTUNG ===
+let hasPlayed = false;
+
+function loadRatingsDisplay() {
+  db.ref('ratings').on('value', snapshot => {
+    const data = snapshot.val() || {};
+    let up = 0, down = 0;
+    Object.values(data).forEach(v => { if (v === 'up') up++; else if (v === 'down') down++; });
+    const el = document.getElementById('ratingsDisplay');
+    if (el && (up + down) > 0) {
+      el.style.display = 'block';
+      el.textContent = `👍 ${up}  👎 ${down}`;
+    }
+  });
+}
+loadRatingsDisplay();
+
+function submitRating(type) {
+  if (localStorage.getItem('brainrotRating')) return;
+  const name = (playerName || 'anonym').trim().toLowerCase().replace(/[^a-z0-9]/g, '_') || 'anonym';
+  db.ref('ratings/' + name + '_' + Date.now()).set(type);
+  localStorage.setItem('brainrotRating', type);
+  document.getElementById('thumbUp').classList.toggle('selected', type === 'up');
+  document.getElementById('thumbDown').classList.toggle('selected', type === 'down');
+  document.getElementById('thumbUp').disabled = true;
+  document.getElementById('thumbDown').disabled = true;
+  document.getElementById('ratingResult').style.display = 'block';
+  document.getElementById('ratingResult').textContent = type === 'up' ? '🙏 Danke für dein Daumen hoch!' : '🙏 Danke für dein Feedback!';
+}
+
+function showRatingIfEligible() {
+  const alreadyRated = localStorage.getItem('brainrotRating');
+  const box = document.getElementById('ratingBox');
+  if (!box) return;
+  if (hasPlayed && !alreadyRated) {
+    box.style.display = 'block';
+    document.getElementById('ratingResult').style.display = 'none';
+    document.getElementById('thumbUp').disabled = false;
+    document.getElementById('thumbDown').disabled = false;
+    document.getElementById('thumbUp').classList.remove('selected');
+    document.getElementById('thumbDown').classList.remove('selected');
+  } else if (alreadyRated) {
+    box.style.display = 'block';
+    document.getElementById('thumbUp').classList.toggle('selected', alreadyRated === 'up');
+    document.getElementById('thumbDown').classList.toggle('selected', alreadyRated === 'down');
+    document.getElementById('thumbUp').disabled = true;
+    document.getElementById('thumbDown').disabled = true;
+    document.getElementById('ratingResult').style.display = 'block';
+    document.getElementById('ratingResult').textContent = '✅ Du hast bereits bewertet – Danke!';
+  } else {
+    box.style.display = 'none';
+  }
+}
 
 // === AUDIO ===
 let audioCtx = null;
@@ -1530,6 +1711,8 @@ function endGame() {
   saveToLeaderboard(finalName, score);
   renderLeaderboard('leaderboard', score);
   renderLeaderboard('leaderboardStart');
+  hasPlayed = true;
+  showRatingIfEligible();
 }
 
 // === WETTER ===
