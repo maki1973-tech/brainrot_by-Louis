@@ -244,6 +244,44 @@ canvas {
   border-color: #00ffff;
 }
 
+#avatarPicker {
+  margin: 12px 0 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+#avatarPicker label {
+  color: #aaa;
+  font-size: 1em;
+}
+#avatarGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 320px;
+}
+.avatarBtn {
+  font-size: 2em;
+  background: rgba(255,255,255,0.07);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.2s, border-color 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+}
+.avatarBtn:active { transform: scale(0.88); }
+.avatarBtn.picked {
+  background: rgba(0,255,255,0.18);
+  border-color: #00ffff;
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(0,255,255,0.5);
+}
+
 #level2Btn {
   position: fixed;
   bottom: 160px;
@@ -268,6 +306,84 @@ canvas {
 @keyframes glow2 {
   from { box-shadow: 0 5px 30px rgba(255,100,0,0.7); transform: translateX(-50%) scale(1); }
   to { box-shadow: 0 5px 50px rgba(255,200,0,1); transform: translateX(-50%) scale(1.05); }
+}
+
+#level3Btn {
+  position: fixed;
+  bottom: 210px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: none;
+  padding: 16px 30px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #aa00ff, #ff00aa);
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  box-shadow: 0 5px 30px rgba(170,0,255,0.7);
+  animation: glow3 1.2s ease-in-out infinite alternate;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@keyframes glow3 {
+  from { box-shadow: 0 5px 30px rgba(170,0,255,0.7); transform: translateX(-50%) scale(1); }
+  to { box-shadow: 0 5px 50px rgba(255,0,200,1); transform: translateX(-50%) scale(1.05); }
+}
+
+#level4Btn {
+  position: fixed;
+  bottom: 260px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: none;
+  padding: 16px 30px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffaa00, #ff6600);
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  box-shadow: 0 5px 30px rgba(255,170,0,0.7);
+  animation: glow4 1.2s ease-in-out infinite alternate;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@keyframes glow4 {
+  from { box-shadow: 0 5px 30px rgba(255,170,0,0.7); transform: translateX(-50%) scale(1); }
+  to { box-shadow: 0 5px 50px rgba(255,220,0,1); transform: translateX(-50%) scale(1.05); }
+}
+
+#level5Btn {
+  position: fixed;
+  bottom: 310px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: none;
+  padding: 16px 30px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff0000, #880000);
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  box-shadow: 0 5px 30px rgba(255,0,0,0.7);
+  animation: glow5 1.2s ease-in-out infinite alternate;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@keyframes glow5 {
+  from { box-shadow: 0 5px 30px rgba(255,0,0,0.7); transform: translateX(-50%) scale(1); }
+  to { box-shadow: 0 5px 50px rgba(255,100,0,1); transform: translateX(-50%) scale(1.05); }
 }
 
 #level2Intro {
@@ -424,6 +540,27 @@ canvas {
     <label>Dein Name:</label>
     <input id="playerNameInput" type="text" maxlength="16" placeholder="Name eingeben..." autocomplete="off" />
   </div>
+  <div id="avatarPicker">
+    <label>Dein Smiley:</label>
+    <div id="avatarGrid">
+      <button class="avatarBtn" onclick="selectAvatar('😀')">😀</button>
+      <button class="avatarBtn" onclick="selectAvatar('😎')">😎</button>
+      <button class="avatarBtn" onclick="selectAvatar('🤩')">🤩</button>
+      <button class="avatarBtn" onclick="selectAvatar('🥳')">🥳</button>
+      <button class="avatarBtn" onclick="selectAvatar('😜')">😜</button>
+      <button class="avatarBtn" onclick="selectAvatar('🤠')">🤠</button>
+      <button class="avatarBtn" onclick="selectAvatar('👾')">👾</button>
+      <button class="avatarBtn" onclick="selectAvatar('🐱')">🐱</button>
+      <button class="avatarBtn" onclick="selectAvatar('🐸')">🐸</button>
+      <button class="avatarBtn" onclick="selectAvatar('🦊')">🦊</button>
+      <button class="avatarBtn" onclick="selectAvatar('🦁')">🦁</button>
+      <button class="avatarBtn" onclick="selectAvatar('🐼')">🐼</button>
+      <button class="avatarBtn" onclick="selectAvatar('🐧')">🐧</button>
+      <button class="avatarBtn" onclick="selectAvatar('🦄')">🦄</button>
+      <button class="avatarBtn" onclick="selectAvatar('🤖')">🤖</button>
+      <button class="avatarBtn" onclick="selectAvatar('👻')">👻</button>
+    </div>
+  </div>
   <p style="color:#00ffff; font-size:0.9em; margin-bottom:10px;">▼ Irgendwo antippen zum Starten ▼</p>
   <button class="btn" id="playBtn">SPIELEN!</button>
   <div id="leaderboardStart"></div>
@@ -470,6 +607,9 @@ canvas {
 <canvas id="game"></canvas>
 
 <button id="level2Btn" onclick="enterLevel2()">🌟 ZWEITES LEVEL BETRETEN 🌟</button>
+<button id="level3Btn" onclick="enterLevel3()">💜 DRITTES LEVEL BETRETEN 💜</button>
+<button id="level4Btn" onclick="enterLevel4()">👑 VIERTES LEVEL BETRETEN 👑</button>
+<button id="level5Btn" onclick="enterLevel5()">🔥 FINALES LEVEL BETRETEN 🔥</button>
 <div id="bombIndicator">🧨</div>
 <div id="levelIndicator">⚡ LEVEL 2 ⚡</div>
 
@@ -477,6 +617,24 @@ canvas {
   <h2>⚡ LEVEL 2 ⚡</h2>
   <p>Alle OGs in diesem Level:</p>
   <div class="og-showcase" id="ogShowcase"></div>
+</div>
+
+<div id="level3Intro" style="position:fixed;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0a2e 0%,#1a003a 50%,#2a0020 100%);z-index:300;color:white;text-align:center;">
+  <h2 style="font-size:2.8em;margin-bottom:8px;text-shadow:0 0 20px #aa00ff,0 0 40px #aa00ff;animation:glow 2s ease-in-out infinite alternate;">💜 LEVEL 3 💜</h2>
+  <p style="color:#aaa;font-size:1.1em;margin-bottom:15px;">Alle OGs in diesem Level:</p>
+  <div class="og-showcase" id="ogShowcase3"></div>
+</div>
+
+<div id="level4Intro" style="position:fixed;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0a0a 0%,#1a1a00 50%,#001a0a 100%);z-index:300;color:white;text-align:center;">
+  <h2 style="font-size:2.8em;margin-bottom:8px;text-shadow:0 0 20px #ffdd00,0 0 40px #ffdd00;animation:glow 2s ease-in-out infinite alternate;">👑 LEVEL 4 👑</h2>
+  <p style="color:#aaa;font-size:1.1em;margin-bottom:15px;">Alle OGs in diesem Level:</p>
+  <div class="og-showcase" id="ogShowcase4"></div>
+</div>
+
+<div id="level5Intro" style="position:fixed;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#000000 0%,#1a0000 50%,#000a1a 100%);z-index:300;color:white;text-align:center;">
+  <h2 style="font-size:2.8em;margin-bottom:8px;text-shadow:0 0 20px #ff0000,0 0 40px #ff0000;animation:glow 2s ease-in-out infinite alternate;">🔥 LEVEL 5 – FINAL 🔥</h2>
+  <p style="color:#aaa;font-size:1.1em;margin-bottom:15px;">Alle OGs in diesem Level:</p>
+  <div class="og-showcase" id="ogShowcase5"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -646,6 +804,19 @@ nameInput.value = playerName;
 nameInput.addEventListener('input', () => {
   playerName = nameInput.value.trim();
   localStorage.setItem('brainrotPlayerName', playerName);
+});
+
+let playerAvatar = localStorage.getItem('brainrotPlayerAvatar') || '😀';
+function selectAvatar(emoji) {
+  playerAvatar = emoji;
+  localStorage.setItem('brainrotPlayerAvatar', emoji);
+  document.querySelectorAll('.avatarBtn').forEach(btn => {
+    btn.classList.toggle('picked', btn.textContent === emoji);
+  });
+}
+// Beim Laden direkt markieren
+document.querySelectorAll('.avatarBtn').forEach(btn => {
+  if (btn.textContent === playerAvatar) btn.classList.add('picked');
 });
 
 function saveToLeaderboard(name, pts) {
@@ -982,6 +1153,7 @@ const BRAINROT_TYPES = [
   { emoji: '🚽', name: 'Symbidi Toilet',  points: 1000000, rarity: 'og', color: '#00ffff', og: true, ogId: 'symbidi',  level: 1 },
   { emoji: '🎤', name: '67',              points: 500000,  rarity: 'og', color: '#ff6600', og: true, ogId: 'og67',     level: 2 },
   { emoji: '🦉', name: 'Meowl',           points: 1000000, rarity: 'og', color: '#9966ff', og: true, ogId: 'meowl',    level: 2 },
+  { emoji: '🌀', name: 'Lograndekombinatzone', points: 5000000, rarity: 'og', color: '#ff00ff', og: true, ogId: 'lograndekombina', level: 3 },
 ];
 
 const RARITY_COLORS = {
@@ -1005,7 +1177,7 @@ const RARITY_GLOW = {
 let W, H;
 let player, brainrots, thieves, stars, particles;
 let score, timeLeft, gameRunning, combo, comboTimer, shield, shieldTimer;
-let collected, keys, animFrame, ogSpawned, og2Spawned, og3Spawned, og4Spawned;
+let collected, keys, animFrame, ogSpawned, og2Spawned, og3Spawned, og4Spawned, og5Spawned, og6Spawned;
 let currentLevel, hasBomb, bombs;
 let weather, weatherParticles, lightningFlash, weatherTimer, worldObjects;
 
@@ -1120,6 +1292,9 @@ function startGame() {
   weatherTimer = 300 + Math.random() * 300;
   generateWorldObjects();
   document.getElementById('level2Btn').style.display = 'none';
+  document.getElementById('level3Btn').style.display = 'none';
+  document.getElementById('level4Btn').style.display = 'none';
+  document.getElementById('level5Btn').style.display = 'none';
   document.getElementById('bombIndicator').style.display = 'none';
   document.getElementById('levelIndicator').style.display = 'none';
   camX = 0; camY = 0;
@@ -1271,7 +1446,7 @@ function updateBrainrots() {
   for (let i = brainrots.length - 1; i >= 0; i--) {
     let b = brainrots[i];
     if (b.type.og) {
-      const ogSpeed = (b.type.level === 2) ? 3.8 : 2.2;
+      const ogSpeed = b.type.level === 3 ? 5.5 : b.type.level === 2 ? 3.8 : 2.2;
       b.changeTimer = (b.changeTimer || 0) - 1;
       if (b.changeTimer <= 0) {
         let angle = Math.random() * Math.PI * 2;
@@ -1406,8 +1581,17 @@ function updateHUD() {
   } else {
     document.getElementById('combo').textContent = '';
   }
-  if (currentLevel === 1 && score >= 2002000) {
+  if (currentLevel === 1 && score >= 2001000) {
     document.getElementById('level2Btn').style.display = 'block';
+  }
+  if (currentLevel === 2 && score >= 5000000) {
+    document.getElementById('level3Btn').style.display = 'block';
+  }
+  if (currentLevel === 3 && score >= 10000000) {
+    document.getElementById('level4Btn').style.display = 'block';
+  }
+  if (currentLevel === 4 && score >= 10000000) {
+    document.getElementById('level5Btn').style.display = 'block';
   }
   let inv = document.getElementById('inventory');
   let show = collected.slice(-15);
@@ -1545,39 +1729,17 @@ function drawPlayer() {
     ctx.restore();
   }
   ctx.save();
+  ctx.font = `${player.size * 2}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
   ctx.shadowColor = '#00ffff';
   ctx.shadowBlur = 15;
-  ctx.beginPath();
-  ctx.arc(x, y, player.size, 0, Math.PI * 2);
-  let grad = ctx.createRadialGradient(x, y, 0, x, y, player.size);
-  grad.addColorStop(0, '#00ddff');
-  grad.addColorStop(1, '#0066aa');
-  ctx.fillStyle = grad;
-  ctx.fill();
-  ctx.strokeStyle = '#00ffff';
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  ctx.fillText(playerAvatar, x, y);
   ctx.shadowBlur = 0;
-  let eyeOffX = Math.cos(player.angle) * 5;
-  let eyeOffY = Math.sin(player.angle) * 5;
-  ctx.fillStyle = 'white';
-  ctx.beginPath();
-  ctx.arc(x - 7 + eyeOffX, y - 5 + eyeOffY, 6, 0, Math.PI * 2);
-  ctx.arc(x + 7 + eyeOffX, y - 5 + eyeOffY, 6, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#111';
-  ctx.beginPath();
-  ctx.arc(x - 5 + eyeOffX * 1.3, y - 5 + eyeOffY * 1.3, 3, 0, Math.PI * 2);
-  ctx.arc(x + 9 + eyeOffX * 1.3, y - 5 + eyeOffY * 1.3, 3, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(x + eyeOffX, y + 4 + eyeOffY, 8, 0.1, Math.PI - 0.1);
-  ctx.strokeStyle = '#111';
-  ctx.lineWidth = 2;
-  ctx.stroke();
   ctx.restore();
   ctx.font = 'bold 13px Arial';
   ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = '#00ffff';
   ctx.fillText('DU', x, y - player.size - 8);
 }
@@ -1714,21 +1876,28 @@ function endGame() {
   document.getElementById('hud').style.display = 'none';
   document.getElementById('inventory').style.display = 'none';
   document.getElementById('level2Btn').style.display = 'none';
+  document.getElementById('level3Btn').style.display = 'none';
+  document.getElementById('level4Btn').style.display = 'none';
+  document.getElementById('level5Btn').style.display = 'none';
   document.getElementById('bombIndicator').style.display = 'none';
   document.getElementById('levelIndicator').style.display = 'none';
-  document.getElementById('gameOverScreen').style.display = 'flex';
-  document.getElementById('finalScore').textContent = score.toLocaleString('de-DE') + ' Punkte';
-  let counts = {};
-  for (let c of collected) { counts[c.name] = (counts[c.name] || 0) + 1; }
-  let summary = Object.entries(counts).map(([name, count]) => `${count}x ${name}`).join(', ');
-  document.getElementById('finalCollection').textContent =
-    collected.length > 0 ? `Gesammelt: ${collected.length} Figuren (${summary})` : 'Keine Figuren gesammelt!';
-  const finalName = playerName || 'Anonym';
-  saveToLeaderboard(finalName, score);
-  renderLeaderboard('leaderboard', score);
-  renderLeaderboard('leaderboardStart');
-  hasPlayed = true;
-  showRatingIfEligible();
+  if (currentLevel === 5) {
+    showCrownScreen();
+  } else {
+    document.getElementById('gameOverScreen').style.display = 'flex';
+    document.getElementById('finalScore').textContent = score.toLocaleString('de-DE') + ' Punkte';
+    let counts = {};
+    for (let c of collected) { counts[c.name] = (counts[c.name] || 0) + 1; }
+    let summary = Object.entries(counts).map(([name, count]) => `${count}x ${name}`).join(', ');
+    document.getElementById('finalCollection').textContent =
+      collected.length > 0 ? `Gesammelt: ${collected.length} Figuren (${summary})` : 'Keine Figuren gesammelt!';
+    const finalName = playerName || 'Anonym';
+    saveToLeaderboard(finalName, score);
+    renderLeaderboard('leaderboard', score);
+    renderLeaderboard('leaderboardStart');
+    hasPlayed = true;
+    showRatingIfEligible();
+  }
 }
 
 // === WETTER ===
@@ -1857,6 +2026,36 @@ function drawBombs() {
   }
 }
 
+// === KRONE (Ende Level 4) ===
+function showCrownScreen() {
+  const crown = document.createElement('div');
+  crown.id = 'crownScreen';
+  crown.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0a0a,#1a1a00,#002200);z-index:400;color:white;text-align:center;';
+  crown.innerHTML = `
+    <div style="font-size:6em;animation:bombPulse 0.6s ease-in-out infinite alternate;">👑</div>
+    <div style="font-size:2.2em;font-weight:bold;margin:15px 0;text-shadow:0 0 30px #ffdd00,0 0 60px #ffdd00;animation:glow 1s ease-in-out infinite alternate;">DU HAST DAS SPIEL DURCHGESPIELT!</div>
+    <div style="font-size:1.4em;color:#ffdd00;">${score.toLocaleString('de-DE')} Punkte</div>
+    <div style="color:#aaa;font-size:1.1em;margin-top:20px;">Probiere jetzt auf dem ersten Platz zu kommen! 🏆</div>
+  `;
+  document.body.appendChild(crown);
+  setTimeout(() => {
+    crown.remove();
+    document.getElementById('gameOverScreen').style.display = 'flex';
+    document.getElementById('finalScore').textContent = score.toLocaleString('de-DE') + ' Punkte';
+    let counts = {};
+    for (let c of collected) { counts[c.name] = (counts[c.name] || 0) + 1; }
+    let summary = Object.entries(counts).map(([name, count]) => `${count}x ${name}`).join(', ');
+    document.getElementById('finalCollection').textContent =
+      collected.length > 0 ? `Gesammelt: ${collected.length} Figuren (${summary})` : 'Keine Figuren gesammelt!';
+    const finalName = playerName || 'Anonym';
+    saveToLeaderboard(finalName, score);
+    renderLeaderboard('leaderboard', score);
+    renderLeaderboard('leaderboardStart');
+    hasPlayed = true;
+    showRatingIfEligible();
+  }, 20000);
+}
+
 // === LEVEL 2 ===
 function enterLevel2() {
   gameRunning = false;
@@ -1932,6 +2131,158 @@ function startLevel2() {
   gameLoop();
 }
 
+// === LEVEL 3 ===
+function enterLevel3() {
+  gameRunning = false;
+  document.getElementById('level3Btn').style.display = 'none';
+  clearInterval(window._timerInterval);
+  const allOGs = BRAINROT_TYPES.filter(t => t.og && t.level <= 3);
+  document.getElementById('ogShowcase3').innerHTML = allOGs.map(og => `
+    <div class="og-card">
+      <div class="og-emoji">${og.emoji}</div>
+      <div class="og-name">${og.name}</div>
+      <div class="og-pts">${og.points.toLocaleString('de-DE')} Pts</div>
+    </div>
+  `).join('');
+  document.getElementById('level3Intro').style.display = 'flex';
+  setTimeout(() => {
+    document.getElementById('level3Intro').style.display = 'none';
+    startLevel3();
+  }, 5000);
+}
+
+function startLevel3() {
+  currentLevel = 3;
+  timeLeft = 60;
+  gameRunning = true;
+  og5Spawned = false;
+  document.getElementById('timer').textContent = '60s';
+  document.getElementById('timer').style.color = '#ff6666';
+  document.getElementById('levelIndicator').textContent = '💜 LEVEL 3 💜';
+  document.getElementById('levelIndicator').style.color = '#aa00ff';
+  document.getElementById('levelIndicator').style.display = 'block';
+  // Alle bisherigen OGs wieder spawnen falls weg
+  ['erdbeere','symbidi','og67','meowl'].forEach((id, i) => {
+    if (!brainrots.some(b => b.type.ogId === id)) {
+      const t = BRAINROT_TYPES.find(t => t.ogId === id);
+      brainrots.push({ x: 150+Math.random()*(WORLD_W-300), y: 150+Math.random()*(WORLD_H-300), type: t, size: 38, bobOffset: i*Math.PI/2, spawnTime: Date.now() });
+    }
+  });
+  // Neuer Level-3-OG spawnen
+  setTimeout(() => {
+    if (!gameRunning || currentLevel < 3 || og5Spawned) return;
+    og5Spawned = true;
+    const t = BRAINROT_TYPES.find(t => t.ogId === 'lograndekombina');
+    brainrots.push({ x: 150+Math.random()*(WORLD_W-300), y: 150+Math.random()*(WORLD_H-300), type: t, size: 42, bobOffset: 0, spawnTime: Date.now() });
+    floatingText(WORLD_W/2, WORLD_H/2, '🌀 LOGRANDEKOMBINATZONE ERSCHEINT! 🌀', '#ff00ff');
+  }, 8000);
+  setTimeout(() => { if (gameRunning) spawnBomb(); }, 5000);
+  window._timerInterval = setInterval(() => {
+    if (!gameRunning) return;
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft + 's';
+    if (timeLeft <= 10) { document.getElementById('timer').style.color = '#ff0000'; playSound('tick'); }
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+  if (animFrame) cancelAnimationFrame(animFrame);
+  gameLoop();
+}
+
+// === LEVEL 4 ===
+function enterLevel4() {
+  gameRunning = false;
+  document.getElementById('level4Btn').style.display = 'none';
+  clearInterval(window._timerInterval);
+  const allOGs = BRAINROT_TYPES.filter(t => t.og);
+  document.getElementById('ogShowcase4').innerHTML = allOGs.map(og => `
+    <div class="og-card">
+      <div class="og-emoji">${og.emoji}</div>
+      <div class="og-name">${og.name}</div>
+      <div class="og-pts">${og.points.toLocaleString('de-DE')} Pts</div>
+    </div>
+  `).join('');
+  document.getElementById('level4Intro').style.display = 'flex';
+  setTimeout(() => {
+    document.getElementById('level4Intro').style.display = 'none';
+    startLevel4();
+  }, 5000);
+}
+
+function startLevel4() {
+  currentLevel = 4;
+  timeLeft = 60;
+  gameRunning = true;
+  og6Spawned = false;
+  document.getElementById('timer').textContent = '60s';
+  document.getElementById('timer').style.color = '#ff6666';
+  document.getElementById('levelIndicator').textContent = '👑 LEVEL 4 👑';
+  document.getElementById('levelIndicator').style.color = '#ffdd00';
+  document.getElementById('levelIndicator').style.display = 'block';
+  ['erdbeere','symbidi','og67','meowl','lograndekombina'].forEach((id, i) => {
+    if (!brainrots.some(b => b.type.ogId === id)) {
+      const t = BRAINROT_TYPES.find(t => t.ogId === id);
+      brainrots.push({ x: 150+Math.random()*(WORLD_W-300), y: 150+Math.random()*(WORLD_H-300), type: t, size: 38, bobOffset: i*Math.PI/3, spawnTime: Date.now() });
+    }
+  });
+  setTimeout(() => { if (gameRunning) spawnBomb(); }, 5000);
+  window._timerInterval = setInterval(() => {
+    if (!gameRunning) return;
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft + 's';
+    if (timeLeft <= 10) { document.getElementById('timer').style.color = '#ff0000'; playSound('tick'); }
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+  if (animFrame) cancelAnimationFrame(animFrame);
+  gameLoop();
+}
+
+// === LEVEL 5 (FINAL) ===
+function enterLevel5() {
+  gameRunning = false;
+  document.getElementById('level5Btn').style.display = 'none';
+  clearInterval(window._timerInterval);
+  const allOGs = BRAINROT_TYPES.filter(t => t.og);
+  document.getElementById('ogShowcase5').innerHTML = allOGs.map(og => `
+    <div class="og-card">
+      <div class="og-emoji">${og.emoji}</div>
+      <div class="og-name">${og.name}</div>
+      <div class="og-pts">${og.points.toLocaleString('de-DE')} Pts</div>
+    </div>
+  `).join('');
+  document.getElementById('level5Intro').style.display = 'flex';
+  setTimeout(() => {
+    document.getElementById('level5Intro').style.display = 'none';
+    startLevel5();
+  }, 5000);
+}
+
+function startLevel5() {
+  currentLevel = 5;
+  timeLeft = 60;
+  gameRunning = true;
+  document.getElementById('timer').textContent = '60s';
+  document.getElementById('timer').style.color = '#ff6666';
+  document.getElementById('levelIndicator').textContent = '🔥 LEVEL 5 – FINAL 🔥';
+  document.getElementById('levelIndicator').style.color = '#ff0000';
+  document.getElementById('levelIndicator').style.display = 'block';
+  ['erdbeere','symbidi','og67','meowl','lograndekombina'].forEach((id, i) => {
+    if (!brainrots.some(b => b.type.ogId === id)) {
+      const t = BRAINROT_TYPES.find(t => t.ogId === id);
+      brainrots.push({ x: 150+Math.random()*(WORLD_W-300), y: 150+Math.random()*(WORLD_H-300), type: t, size: 38, bobOffset: i*Math.PI/3, spawnTime: Date.now() });
+    }
+  });
+  setTimeout(() => { if (gameRunning) spawnBomb(); }, 5000);
+  window._timerInterval = setInterval(() => {
+    if (!gameRunning) return;
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft + 's';
+    if (timeLeft <= 10) { document.getElementById('timer').style.color = '#ff0000'; playSound('tick'); }
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+  if (animFrame) cancelAnimationFrame(animFrame);
+  gameLoop();
+}
+
 // === START BUTTONS ===
 // Alle Buttons explizit mit touchend + click verknüpfen
 var _starting = false;
@@ -1956,6 +2307,7 @@ document.getElementById('retryBtn').addEventListener('click', handleStart, false
 document.getElementById('startScreen').addEventListener('touchend', function(e) {
   if (e.target === document.getElementById('playBtn')) return;
   if (e.target === document.getElementById('playerNameInput')) return;
+  if (e.target.classList.contains('avatarBtn')) return;
   handleStart(e);
 }, { passive: false });
 document.getElementById('gameOverScreen').addEventListener('touchend', function(e) {
